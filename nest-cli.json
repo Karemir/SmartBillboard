@@ -1,0 +1,30 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/smart-billboard/src",
+  "monorepo": true,
+  "root": "apps/smart-billboard",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/smart-billboard/tsconfig.app.json"
+  },
+  "projects": {
+    "smart-billboard": {
+      "type": "application",
+      "root": "apps/smart-billboard",
+      "entryFile": "main",
+      "sourceRoot": "apps/smart-billboard/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/smart-billboard/tsconfig.app.json"
+      }
+    },
+    "billboard-iot": {
+      "type": "application",
+      "root": "apps/billboard-iot",
+      "entryFile": "main",
+      "sourceRoot": "apps/billboard-iot/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/billboard-iot/tsconfig.app.json"
+      }
+    }
+  }
+}
