@@ -37,3 +37,4 @@ lerna-debug.log*
 #Hardhat files
 ethereum/cache
 ethereum/artifacts
+ethereum/typechain
