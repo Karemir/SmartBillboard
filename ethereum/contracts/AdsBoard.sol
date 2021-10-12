@@ -12,7 +12,19 @@ contract AdsBoard {
     using SafeMath for uint256;
 
     address private owner;
-    mapping (address => bool) registeredBillboards;
+    string private basePath;
+    uint256 public adCount;
+
+    struct Ad {
+        uint256 id;
+        address author;
+        uint256 duration;
+        string path;
+        bool isDisplayed;
+    }
+
+    mapping (address => bool) public registeredBillboards;
+    mapping (uint256 => Ad) public ads;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the owner");
@@ -24,15 +36,31 @@ contract AdsBoard {
         _;
     }
 
-    event AdPurchased(address author, string path, uint256 duration);
-    event AdDisplayed(address author, string path, address billboardAddress);
+    event AdPurchased(uint256 id);
+    event AdDisplayed(uint256 id, address billboardAddress);
 
-    constructor() {
+    constructor(string memory _basePath) {
         owner = msg.sender;
+        basePath = _basePath;
+        adCount = 0;
     }
 
-    function buyAd(string calldata path, uint256 duration) external onlyOwner {
-        emit AdPurchased(msg.sender, path, duration);
+    function buyAd(string calldata imageHash, uint256 duration) external onlyOwner returns (uint256) {
+        adCount = adCount + 1;
+
+        string memory path = string(abi.encodePacked(basePath, imageHash));
+        Ad memory ad = Ad({
+            id: adCount,
+            author: msg.sender,
+            duration: duration,
+            path: path,
+            isDisplayed: false
+        });
+        ads[adCount] = ad;
+
+        emit AdPurchased(adCount);
+
+        return adCount;
     }
 
     function registerAsBillboard() external {
@@ -41,7 +69,20 @@ contract AdsBoard {
         registeredBillboards[msg.sender] = true;
     }
 
-    function billboardDisplayed(address author, string calldata path) external onlyBillboard {
-        emit AdDisplayed(author, path, msg.sender);
+    function billboardDisplayed(uint256 adId) external onlyBillboard {
+        ads[adId].isDisplayed = true;
+        emit AdDisplayed(adId, msg.sender);
+    }
+
+    function getAd(uint256 adId) external view returns (
+        uint256 id,
+        address author,
+        uint256 duration,
+        string memory path,
+        bool isDisplayed) 
+        {
+
+        Ad memory ad = ads[adId];
+        return (ad.id, ad.author, ad.duration, ad.path, ad.isDisplayed);
     }
 }

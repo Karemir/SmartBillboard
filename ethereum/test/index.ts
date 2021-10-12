@@ -9,9 +9,11 @@ describe("AdsBoard", function () {
   let billboard1Signer: SignerWithAddress;
   let billboard2Signer: SignerWithAddress;
 
+  let basePath: string = 'testPath/';
+
   before(async () => {
     const AdsBoard = await ethers.getContractFactory('AdsBoard');
-    contract = await AdsBoard.deploy();
+    contract = await AdsBoard.deploy(basePath);
     await contract.deployed();
 
     const signers = await ethers.getSigners();
@@ -21,12 +23,24 @@ describe("AdsBoard", function () {
   });
 
   it('Should emit AdPurchased after buyAd', async () => {
-    const testPath = "abc";
+    const testDuration = 42;
+    const imageHash = 'abc';
+
+    await expect(contract.buyAd(imageHash, testDuration))
+          .to.emit(contract, 'AdPurchased')
+      .withArgs(1);
+  });
+
+  it('Should return Ad with correct values', async () => {
     const testDuration = 42;
 
-    await expect(contract.buyAd(testPath, testDuration))
-          .to.emit(contract, 'AdPurchased')
-          .withArgs(ownerSigner.address, testPath, testDuration);
+    let ad = await contract.getAd(1);
+
+    expect(ad.id.toNumber()).to.equal(1);
+    expect(ad.author).to.equal(await ownerSigner.getAddress());
+    expect(ad.duration).to.equal(testDuration);
+    expect(ad.path).to.equal(`testPath/abc`);
+    expect(ad.isDisplayed).to.equal(false);
   });
 
   it('Should allow to register new address as billboard', async () => {
@@ -42,10 +56,13 @@ describe("AdsBoard", function () {
   });
 
   it('Should emit AdDisplayed after billboardDisplayed', async () => {
-    const testPath = "abc";
+    const adId = 1;
 
-    await expect(contract.connect(billboard1Signer).billboardDisplayed(ownerSigner.address, testPath))
-          .to.emit(contract, 'AdDisplayed')
-          .withArgs(ownerSigner.address, testPath, billboard1Signer.address);
+    await expect(contract.connect(billboard1Signer).billboardDisplayed(1))
+      .to.emit(contract, 'AdDisplayed')
+      .withArgs(1, billboard1Signer.address);
+
+    let ad = await contract.getAd(1);
+    expect(ad.isDisplayed).to.equal(true);
   });
 });
