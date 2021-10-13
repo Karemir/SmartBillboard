@@ -87,10 +87,4 @@ export class ContractService {
             isDisplayed: ad.isDisplayed
         };
     }
-
-    private base64ToArrayBuffer(base64): Buffer {
-        //nary data should be performed using `Buffer.from(str, 'base64')` and`buf.toString('base64')`.**
-        var x = Buffer.from(base64, 'base64')
-        return x
-    }
 }
