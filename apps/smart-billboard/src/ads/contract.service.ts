@@ -55,6 +55,15 @@ export class ContractService {
     }
 
     async buyAd(imageHash: string, adDurationSeconds: number): Promise<number> {
+        console.log(`imageHash = ${imageHash}`)
+        //TODO i will remove it after some checks
+        //const x = Buffer.from(imageHash, 'base64')
+        //console.log(`x = ${x}`)
+        //var arrByte = Uint8Array.from(x)
+        //console.log(`arrByte = ${arrByte}`)
+        const buffer = Buffer.from(imageHash, 'hex')
+        console.log(`buffer = ${buffer}`)
+        console.log(`buffer.buffer = ${buffer.buffer}`)
         const possibleNewId = await this.contract.callStatic.buyAd(imageHash, adDurationSeconds)
         await this.contract.buyAd(imageHash, adDurationSeconds);
 
@@ -74,9 +83,14 @@ export class ContractService {
             id: resultId,
             author: ad.author,
             duration: ad.duration.toNumber(),
-            path: ad.path,
+            path: ad.path + ad.imageHash,
             isDisplayed: ad.isDisplayed
         };
     }
 
+    private base64ToArrayBuffer(base64): Buffer {
+        //nary data should be performed using `Buffer.from(str, 'base64')` and`buf.toString('base64')`.**
+        var x = Buffer.from(base64, 'base64')
+        return x
+    }
 }

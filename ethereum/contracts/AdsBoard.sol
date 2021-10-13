@@ -16,6 +16,7 @@ contract AdsBoard {
         address author;
         uint256 duration;
         string path;
+        bytes32 imageHash; 
         bool isDisplayed;
     }
 
@@ -41,15 +42,16 @@ contract AdsBoard {
         adCount = 0;
     }
 
-    function buyAd(string calldata imageHash, uint256 duration) external onlyOwner returns (uint256 id) {
+    function buyAd(bytes32 imageHash, uint256 duration) external onlyOwner returns (uint256 id) {
         adCount = adCount + 1;
 
-        string memory path = string(abi.encodePacked(basePath, imageHash));
+        //string memory path = string(abi.encodePacked(basePath, imageHash));
         Ad memory ad = Ad({
             id: adCount,
             author: msg.sender,
             duration: duration,
-            path: path,
+            path: basePath,
+            imageHash: imageHash,
             isDisplayed: false
         });
         ads[adCount] = ad;
@@ -75,10 +77,11 @@ contract AdsBoard {
         address author,
         uint256 duration,
         string memory path,
+        bytes32 imageHash,
         bool isDisplayed)
         {
 
         Ad memory ad = ads[adId];
-        return (ad.id, ad.author, ad.duration, ad.path, ad.isDisplayed);
+        return (ad.id, ad.author, ad.duration, ad.path, ad.imageHash, ad.isDisplayed);
     }
 }
