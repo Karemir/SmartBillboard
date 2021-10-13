@@ -15,7 +15,7 @@ async function main() {
 
   // We get the contract to deploy
   const AdsBoard = await ethers.getContractFactory("AdsBoard");
-  const adsBoard = await AdsBoard.deploy();
+  const adsBoard = await AdsBoard.deploy('https://jpgjsonstorage.s3.eu-central-1.amazonaws.com/');
 
   await adsBoard.deployed();
 

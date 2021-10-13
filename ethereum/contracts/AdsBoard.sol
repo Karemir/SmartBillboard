@@ -1,16 +1,12 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-
 // TODO:
 // - owner could set price per minut, and buyAd could be open to anyone.
 // - create some sort of time management
 // - allow user to buy ads targeted to specific billboard, and queue ads one after another
 // - display ad at specific time.
 contract AdsBoard {
-    using SafeMath for uint256;
-
     address private owner;
     string private basePath;
     uint256 public adCount;
@@ -45,7 +41,7 @@ contract AdsBoard {
         adCount = 0;
     }
 
-    function buyAd(string calldata imageHash, uint256 duration) external onlyOwner returns (uint256) {
+    function buyAd(string calldata imageHash, uint256 duration) external onlyOwner returns (uint256 id) {
         adCount = adCount + 1;
 
         string memory path = string(abi.encodePacked(basePath, imageHash));
@@ -79,7 +75,7 @@ contract AdsBoard {
         address author,
         uint256 duration,
         string memory path,
-        bool isDisplayed) 
+        bool isDisplayed)
         {
 
         Ad memory ad = ads[adId];

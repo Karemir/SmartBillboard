@@ -38,3 +38,5 @@ lerna-debug.log*
 ethereum/cache
 ethereum/artifacts
 ethereum/typechain
+
+.env
