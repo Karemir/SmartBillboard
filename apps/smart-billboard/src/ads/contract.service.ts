@@ -55,6 +55,7 @@ export class ContractService {
     }
 
     async buyAd(imageHash: string, adDurationSeconds: number): Promise<number> {
+        console.log(`BuyAd on blockchain is complete, resulting id: ${imageHash} (imageHash)`);
         const possibleNewId = await this.contract.callStatic.buyAd(imageHash, adDurationSeconds)
         await this.contract.buyAd(imageHash, adDurationSeconds);
 
