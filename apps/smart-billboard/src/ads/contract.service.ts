@@ -55,16 +55,17 @@ export class ContractService {
     }
 
     async buyAd(imageHash: string, adDurationSeconds: number): Promise<number> {
+        console.log(`BuyAd on blockchain is complete, resulting id: ${imageHash} (imageHash)`);
         const possibleNewId = await this.contract.callStatic.buyAd(imageHash, adDurationSeconds)
         await this.contract.buyAd(imageHash, adDurationSeconds);
 
-        console.log(`BuyAd on blockchain is complete, resulting id: ${possibleNewId.toNumber()} (PROBABLY)`);
-        return possibleNewId.toNumber();
+        console.log(`BuyAd on blockchain is complete, resulting id: ${possibleNewId} (PROBABLY)`);
+        return Number(possibleNewId);
     }
 
     async getAdStatus(id: number): Promise<AdStatusDto> {
         const ad = await this.contract.getAd(id);
-        const resultId: number = ad.id.toNumber();
+        const resultId: number = Number(ad.id);
 
         if (resultId == 0) {
             throw new NotFoundException();
@@ -73,10 +74,9 @@ export class ContractService {
         return {
             id: resultId,
             author: ad.author,
-            duration: ad.duration.toNumber(),
-            path: ad.path,
+            duration: Number(ad.duration),
+            path: ad.path + ad.imageHash,
             isDisplayed: ad.isDisplayed
         };
     }
-
 }

@@ -21,7 +21,7 @@ export class AdsService {
 
     async buyAd(buyAdDto: BuyAdDto): Promise<buyAdResultDto> {
         let image = Buffer.from(buyAdDto.image, 'base64');
-        let imageHash = sha256(image).substring(2);
+        let imageHash = sha256(image);
 
         const s3Result: PutObjectCommandOutput = await this.s3Client.send(new PutObjectCommand({
             Bucket: process.env.AWS_BUCKET_NAME,

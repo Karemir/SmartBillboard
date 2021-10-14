@@ -24,7 +24,7 @@ describe("AdsBoard", function () {
 
   it('Should emit AdPurchased after buyAd', async () => {
     const testDuration = 42;
-    const imageHash = 'abc';
+    const imageHash = '0x9e8c573348c531e0fe6d2174addf46b48b979f786d4c66578e457289701f8395';
 
     await expect(contract.buyAd(imageHash, testDuration))
           .to.emit(contract, 'AdPurchased')
@@ -36,10 +36,11 @@ describe("AdsBoard", function () {
 
     let ad = await contract.getAd(1);
 
-    expect(ad.id.toNumber()).to.equal(1);
+    expect(ad.id).to.equal(1);
     expect(ad.author).to.equal(await ownerSigner.getAddress());
     expect(ad.duration).to.equal(testDuration);
-    expect(ad.path).to.equal(`testPath/abc`);
+    expect(ad.path).to.equal(`testPath/`);
+    expect(ad.imageHash).to.equal('0x9e8c573348c531e0fe6d2174addf46b48b979f786d4c66578e457289701f8395');
     expect(ad.isDisplayed).to.equal(false);
   });
 
