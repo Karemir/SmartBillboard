@@ -55,25 +55,16 @@ export class ContractService {
     }
 
     async buyAd(imageHash: string, adDurationSeconds: number): Promise<number> {
-        console.log(`imageHash = ${imageHash}`)
-        //TODO i will remove it after some checks
-        //const x = Buffer.from(imageHash, 'base64')
-        //console.log(`x = ${x}`)
-        //var arrByte = Uint8Array.from(x)
-        //console.log(`arrByte = ${arrByte}`)
-        const buffer = Buffer.from(imageHash, 'hex')
-        console.log(`buffer = ${buffer}`)
-        console.log(`buffer.buffer = ${buffer.buffer}`)
         const possibleNewId = await this.contract.callStatic.buyAd(imageHash, adDurationSeconds)
         await this.contract.buyAd(imageHash, adDurationSeconds);
 
-        console.log(`BuyAd on blockchain is complete, resulting id: ${possibleNewId.toNumber()} (PROBABLY)`);
-        return possibleNewId.toNumber();
+        console.log(`BuyAd on blockchain is complete, resulting id: ${possibleNewId} (PROBABLY)`);
+        return Number(possibleNewId);
     }
 
     async getAdStatus(id: number): Promise<AdStatusDto> {
         const ad = await this.contract.getAd(id);
-        const resultId: number = ad.id.toNumber();
+        const resultId: number = Number(ad.id);
 
         if (resultId == 0) {
             throw new NotFoundException();
@@ -82,7 +73,7 @@ export class ContractService {
         return {
             id: resultId,
             author: ad.author,
-            duration: ad.duration.toNumber(),
+            duration: Number(ad.duration),
             path: ad.path + ad.imageHash,
             isDisplayed: ad.isDisplayed
         };

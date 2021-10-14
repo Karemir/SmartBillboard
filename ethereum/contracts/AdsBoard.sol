@@ -9,19 +9,18 @@ pragma solidity ^0.8.0;
 contract AdsBoard {
     address private owner;
     string private basePath;
-    uint256 public adCount;
+    uint32 public adCount;
 
     struct Ad {
-        uint256 id;
         address author;
-        uint256 duration;
+        uint32 duration;
+        bytes32 imageHash;
         string path;
-        bytes32 imageHash; 
         bool isDisplayed;
     }
 
     mapping (address => bool) public registeredBillboards;
-    mapping (uint256 => Ad) public ads;
+    mapping (uint32 => Ad) public ads;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the owner");
@@ -33,8 +32,8 @@ contract AdsBoard {
         _;
     }
 
-    event AdPurchased(uint256 id);
-    event AdDisplayed(uint256 id, address billboardAddress);
+    event AdPurchased(uint32 id);
+    event AdDisplayed(uint32 id, address billboardAddress);
 
     constructor(string memory _basePath) {
         owner = msg.sender;
@@ -42,16 +41,14 @@ contract AdsBoard {
         adCount = 0;
     }
 
-    function buyAd(bytes32 imageHash, uint256 duration) external onlyOwner returns (uint256 id) {
+    function buyAd(bytes32 imageHash, uint32 duration) external onlyOwner returns (uint32 id) {
         adCount = adCount + 1;
 
-        //string memory path = string(abi.encodePacked(basePath, imageHash));
         Ad memory ad = Ad({
-            id: adCount,
             author: msg.sender,
             duration: duration,
-            path: basePath,
             imageHash: imageHash,
+            path: basePath,
             isDisplayed: false
         });
         ads[adCount] = ad;
@@ -67,21 +64,21 @@ contract AdsBoard {
         registeredBillboards[msg.sender] = true;
     }
 
-    function billboardDisplayed(uint256 adId) external onlyBillboard {
+    function billboardDisplayed(uint32 adId) external onlyBillboard {
         ads[adId].isDisplayed = true;
         emit AdDisplayed(adId, msg.sender);
     }
 
-    function getAd(uint256 adId) external view returns (
-        uint256 id,
+    function getAd(uint32 adId) external view returns (
+        uint32 id,
         address author,
-        uint256 duration,
-        string memory path,
+        uint32 duration,
         bytes32 imageHash,
+        string memory path,
         bool isDisplayed)
         {
 
         Ad memory ad = ads[adId];
-        return (ad.id, ad.author, ad.duration, ad.path, ad.imageHash, ad.isDisplayed);
+        return (adId, ad.author, ad.duration, ad.imageHash, ad.path, ad.isDisplayed);
     }
 }
