@@ -65,16 +65,15 @@ export class ContractService {
 
     async getAdStatus(id: number): Promise<AdStatusDto> {
         const ad = await this.contract.getAd(id);
-        const resultId: number = Number(ad.id);
-
-        if (resultId == 0) {
+        
+        if (ad.author == "0x0000000000000000000000000000000000000000") {
             throw new NotFoundException();
         }
 
         return {
-            id: resultId,
+            id: ad.id,
             author: ad.author,
-            duration: Number(ad.duration),
+            duration: ad.duration,
             path: ad.path + ad.imageHash,
             isDisplayed: ad.isDisplayed
         };
