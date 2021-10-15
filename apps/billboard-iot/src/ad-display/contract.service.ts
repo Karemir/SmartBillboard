@@ -13,6 +13,7 @@ export class ContractService {
     private readonly ethProvider: ethers.providers.JsonRpcProvider;
     private readonly signer: ethers.Signer;
     private readonly contract: ethers.Contract;
+    private signerAddress: string;
 
     constructor(
         private readonly configService: ConfigService,
@@ -34,11 +35,14 @@ export class ContractService {
 
         this.signer.getAddress().then((addr) => {
             console.log(`-- using account: ${addr}`);
+            this.signerAddress = addr;
+
+            this.registerAsBillboardIfNeeded();
+            this.listenToAdPurchasedEvents();
         }, (err) => {
             console.log(`RPC CONNECTION FAILED, ${err}`);
         })
 
-        this.listenToAdPurchasedEvents();
     }
 
     private listenToAdPurchasedEvents() {
@@ -52,7 +56,12 @@ export class ContractService {
     }
 
     private registerAsBillboardIfNeeded() {
-
+        this.isRegisteredAsBillboard().then((isBillboard) => {
+            console.log(`ContractService: is billboard - ${isBillboard}`);
+            if (!isBillboard) {
+                this.registerAsBillboard();
+            }
+        });
     }
 
     async getAdInfo(id: number): Promise<AdInfoDto> {
@@ -73,12 +82,14 @@ export class ContractService {
     }
 
     async isRegisteredAsBillboard(): Promise<boolean> {
-
+        const result = await this.contract.registeredBillboards(this.signerAddress);
+        return result;
     }
 
     async registerAsBillboard(): Promise<boolean> {
         try {
             await this.contract.registerAsBillboard();
+            console.log("ContractService: Billboard registered");
             return true;
         } catch (err) {
             console.log("Billboard registration failed");
