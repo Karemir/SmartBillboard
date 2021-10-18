@@ -55,7 +55,7 @@ export class ContractService {
         this.signer.getAddress().then((addr) => {
             console.log(`-- using account: ${addr}`);
         }, (err) => {
-            console.log(`RPC CONNECTION FAILED, ${err}`);
+            console.log(`RPC CONNECTION FAILED, ${err}`); 
         })
     }
 
