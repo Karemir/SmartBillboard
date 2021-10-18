@@ -2,10 +2,11 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { ethers } from 'ethers';
 import { AdsBoard__factory } from '../../../../ethereum/typechain/factories/AdsBoard__factory';
+import ethereumConfig from './configs/ethereum.config';
 import { AdStatusDto } from './dto/ad-status.dto';
 
 /*
@@ -32,9 +33,13 @@ export class ContractService {
     private readonly signer: ethers.Signer;
     private readonly contract: ethers.Contract;
 
-    constructor(private readonly configService: ConfigService) {
-        const rpcUrl = configService.get<string>('ETHEREUM_URL');
-        const adBoardContractAddress = configService.get<string>('ADSBOARD_CONTRACT'); // 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    constructor(
+        private readonly configService: ConfigService,
+        @Inject(ethereumConfig.KEY)
+        private readonly ethereumConfiguration: ConfigType<typeof ethereumConfig>
+        ) {
+        const rpcUrl = ethereumConfiguration.url;
+        const adBoardContractAddress = ethereumConfiguration.adsboardContract; // 0x5FbDB2315678afecb367f032d93F642f64180aa3
 
         this.ethProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
         this.signer = this.ethProvider.getSigner();

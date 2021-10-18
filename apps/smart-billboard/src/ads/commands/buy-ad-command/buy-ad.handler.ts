@@ -1,7 +1,9 @@
 import { PutObjectCommand, PutObjectCommandOutput, S3Client } from "@aws-sdk/client-s3";
-import { InternalServerErrorException } from "@nestjs/common";
+import { Inject, InternalServerErrorException } from "@nestjs/common";
+import { ConfigType } from "@nestjs/config";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { sha256 } from "ethers/lib/utils";
+import awsBucketConfig from "../../configs/aws-bucket.config";
 import { ContractService } from "../../contract.service";
 import { BuyAdCommand } from "./buy-ad.command";
 import { BuyAdCommandResult } from "./buy-ad.command-result";
@@ -10,8 +12,12 @@ import { BuyAdCommandResult } from "./buy-ad.command-result";
 export class BuyAdCommandHandler implements ICommandHandler<BuyAdCommand> {
     private readonly s3Client: S3Client;
 
-    constructor(private readonly contractService: ContractService) {
-        this.s3Client = new S3Client({ region: process.env.AWS_BUCKET_REGION });
+    constructor(
+        private readonly contractService: ContractService,
+        @Inject(awsBucketConfig.KEY)
+        private readonly awsBucketConfiguration: ConfigType<typeof awsBucketConfig>
+        ) {
+        this.s3Client = new S3Client({ region: awsBucketConfiguration.region });
     }
 
     async execute(command: BuyAdCommand): Promise<BuyAdCommandResult> {
@@ -19,7 +25,7 @@ export class BuyAdCommandHandler implements ICommandHandler<BuyAdCommand> {
         let imageHash = sha256(image);
 
         const s3Result: PutObjectCommandOutput = await this.s3Client.send(new PutObjectCommand({
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: this.awsBucketConfiguration.name,
             Key: imageHash, // The name of the object. For example, 'sample_upload.txt'.
             Body: image, // The content of the object. For example, 'Hello world!".
             ContentType: 'image/png',
