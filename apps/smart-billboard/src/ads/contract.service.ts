@@ -37,19 +37,24 @@ export class ContractService {
         private readonly configService: ConfigService,
         @Inject(ethereumConfig.KEY)
         private readonly ethereumConfiguration: ConfigType<typeof ethereumConfig>
-        ) {
-        const rpcUrl = ethereumConfiguration.url;
-        const adBoardContractAddress = ethereumConfiguration.adsboardContract; // 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    ) {
 
-        this.ethProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
-        this.signer = this.ethProvider.getSigner();
+        console.log('Initializing ContractService');
+        this.ethProvider = new ethers.providers.JsonRpcProvider(ethereumConfiguration.url);
+        if (ethereumConfiguration.useLocal) {
+            console.log('ContractService using local config');
+            this.signer = this.ethProvider.getSigner();
+        } else {
+            console.log('ContractService using public config');
+            const wallet = ethers.Wallet.fromMnemonic(ethereumConfiguration.walletMnemonic);
+            this.signer = wallet.connect(this.ethProvider);
+        }
 
         const factory = new AdsBoard__factory(this.signer);
-        this.contract = new ethers.Contract(adBoardContractAddress,
+        this.contract = new ethers.Contract(ethereumConfiguration.adsboardContract,
             factory.interface,
             this.signer);
 
-        console.log('Initializing ContractService');
         console.log(`-- using adboard contract address: ${this.contract.address}`);
 
         this.signer.getAddress().then((addr) => {
