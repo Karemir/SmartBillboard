@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
+import ethereumConfig from './configs/ethereum.config';
 import { ethers } from 'ethers';
 import { EventEmitter2 } from 'eventemitter2';
 import { AdsBoard__factory } from '../../../../ethereum/typechain/factories/AdsBoard__factory';
@@ -16,39 +17,43 @@ export class ContractService {
     private signerAddress: string;
 
     constructor(
-        private readonly configService: ConfigService,
+        @Inject(ethereumConfig.KEY)
+        private readonly ethereumConfiguration: ConfigType<typeof ethereumConfig>,
         private readonly eventEmitter: EventEmitter2,
     ) {
-        const rpcUrl = configService.get<string>('ETHEREUM_URL');
-        const adBoardContractAddress = configService.get<string>('ADSBOARD_CONTRACT'); // 0x5FbDB2315678afecb367f032d93F642f64180aa3
 
-        this.ethProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
-        this.signer = this.ethProvider.getSigner();
+        console.log('Initializing ContractService');
+        this.ethProvider = new ethers.providers.JsonRpcProvider(ethereumConfiguration.url);
+        if (ethereumConfiguration.useLocal) {
+            console.log('ContractService using local config');
+            this.signer = this.ethProvider.getSigner();
+        } else {
+            console.log('ContractService using public config');
+            const wallet = ethers.Wallet.fromMnemonic(ethereumConfiguration.walletMnemonic);
+            this.signer = wallet.connect(this.ethProvider);
+        }
 
         const factory = new AdsBoard__factory(this.signer);
-        this.contract = new ethers.Contract(adBoardContractAddress,
+        this.contract = new ethers.Contract(ethereumConfiguration.adsboardContract,
             factory.interface,
             this.signer);
 
-        console.log('Initializing ContractService');
         console.log(`-- using adboard contract address: ${this.contract.address}`);
 
         this.signer.getAddress().then((addr) => {
             console.log(`-- using account: ${addr}`);
             this.signerAddress = addr;
-
             this.registerAsBillboardIfNeeded();
             this.listenToAdPurchasedEvents();
         }, (err) => {
             console.log(`RPC CONNECTION FAILED, ${err}`);
         })
-
     }
 
     private listenToAdPurchasedEvents() {
         console.log(`-- registering for AdPurchased events`);
         this.contract.on('AdPurchased', async (id) => {
-            const idNumber: number = id.toNumber();
+            const idNumber: number = id;
             console.log(`Ad purchased! ${idNumber}`);
 
             this.eventEmitter.emit(NewAdEventName, new NewAdEvent(idNumber))
@@ -66,7 +71,7 @@ export class ContractService {
 
     async getAdInfo(id: number): Promise<AdInfoDto> {
         const ad = await this.contract.getAd(id);
-        const resultId: number = ad.id.toNumber();
+        const resultId: number = ad.id;
 
         if (resultId == 0) {
             throw new NotFoundException();
@@ -75,8 +80,8 @@ export class ContractService {
         return {
             id: resultId,
             author: ad.author,
-            duration: ad.duration.toNumber(),
-            path: ad.path,
+            duration: ad.duration,
+            path: ad.path + ad.imageHash,
             isDisplayed: ad.isDisplayed
         };
     }

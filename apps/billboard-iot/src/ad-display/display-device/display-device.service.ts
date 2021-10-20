@@ -1,23 +1,51 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventEmitter2 } from 'eventemitter2';
 import { ContractService } from '../contract.service';
 import { AdDisplayedEvent, AdDisplayedEventName } from '../event/ad-displayed.event';
 import { NewAdEvent, NewAdEventName } from '../event/new-ad.event';
 import * as Fs from 'fs';
+import { spawn } from 'child_process';
+import displayDeviceConfig from '../configs/display-device.config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class DisplayDeviceService {
     constructor(
         private readonly eventEmitter: EventEmitter2,
         private readonly httpService: HttpService,
-        private readonly contractService: ContractService) {
+        private readonly contractService: ContractService,
+        @Inject(displayDeviceConfig.KEY)
+        private readonly deviceConfig: ConfigType<typeof displayDeviceConfig>,
+    ) {
         // TODO: init the display device.
+        // TODO: add configuration for python paths and script name and also if to use PI or other platform
+    }
+
+    displayAdOnRaspberry(filepath: string): Promise<void> {
+        let promise = new Promise<void>((resolve, reject) => {
+            let python = spawn(this.deviceConfig.displayScriptRunner, [
+                this.deviceConfig.displayScriptPath,
+                filepath,
+            ]);
+            python.stdout.on('data', (data) => { console.log('python stdout'); console.log(data.toString()); });
+            python.stderr.on('data', (data) => { console.log('python stderr'); console.log(data.toString()); });
+            python.on('close', (code) => {
+                console.log(`Python script closed with status: ${code}`);
+                if (code === 0) {
+                    resolve();
+                } else {
+                    reject('Ad failed to display');
+                }
+            });
+        });
+        return promise;
     }
 
     displayAd(id: number, filePath: string, forMinDuration: number) {
         console.log(`i am now displaying the ad #${id} at: ${filePath} for ${forMinDuration} seconds`);
+        this.displayAdOnRaspberry(filePath);
         setTimeout(() => {
             console.log(`done with the ad ${filePath}`);
 
