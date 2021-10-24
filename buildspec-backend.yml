@@ -17,6 +17,8 @@ phases:
     commands:
         - echo Creating env file from aws parameters
         - echo AWS_BUCKET_NAME = $AWS_BUCKET_NAME
+        - echo start hardhat compile
+        - npx hardhat compile
         - echo Build started 
         - yarn run build
 artifacts:
