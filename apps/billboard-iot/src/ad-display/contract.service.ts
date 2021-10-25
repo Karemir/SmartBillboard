@@ -8,6 +8,7 @@ import { AdsBoard__factory } from '../../../../ethereum/typechain/factories/AdsB
 import { AdInfoDto } from './dto/ad-info.dto';
 import { AdDisplayedEvent, AdDisplayedEventName } from './event/ad-displayed.event';
 import { NewAdEvent, NewAdEventName } from './event/new-ad.event';
+import { readFile, readFileSync } from 'fs';
 
 @Injectable()
 export class ContractService {
@@ -24,14 +25,11 @@ export class ContractService {
 
         console.log('Initializing ContractService');
         this.ethProvider = new ethers.providers.JsonRpcProvider(ethereumConfiguration.url);
-        if (ethereumConfiguration.useLocal) {
-            console.log('ContractService using local config');
-            this.signer = this.ethProvider.getSigner();
-        } else {
-            console.log('ContractService using public config');
-            const wallet = ethers.Wallet.fromMnemonic(ethereumConfiguration.walletMnemonic);
-            this.signer = wallet.connect(this.ethProvider);
-        }
+
+        console.log('ContractService using iot encrypted json wallet');
+        const walletJson = readFileSync(ethereumConfiguration.iotJsonFile, { encoding: "utf8" });
+        const wallet = ethers.Wallet.fromEncryptedJsonSync(walletJson, ethereumConfiguration.iotJsonPassword);
+        this.signer = wallet.connect(this.ethProvider);
 
         const factory = new AdsBoard__factory(this.signer);
         this.contract = new ethers.Contract(ethereumConfiguration.adsboardContract,
@@ -43,6 +41,9 @@ export class ContractService {
         this.signer.getAddress().then((addr) => {
             console.log(`-- using account: ${addr}`);
             this.signerAddress = addr;
+            this.signer.getBalance().then((value) => {
+                console.log(`-- this account has: ${ethers.utils.formatEther(value)} ether`);
+            });
             this.registerAsBillboardIfNeeded();
             this.listenToAdPurchasedEvents();
         }, (err) => {
@@ -97,8 +98,7 @@ export class ContractService {
             console.log("ContractService: Billboard registered");
             return true;
         } catch (err) {
-            console.log("Billboard registration failed");
-            console.log(err);
+            console.log(`Billboard registration failed, reason ${err.message}`);
             return false;
         }
     }
