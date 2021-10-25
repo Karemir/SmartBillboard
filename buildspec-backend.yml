@@ -28,6 +28,12 @@ phases:
         - less .env
         - echo going inside ethereum
         - cd ethereum
+        - echo Creating env file from aws parameters
+        - echo "ETHERSCAN_API_KEY = ABC123ABC123ABC123ABC123ABC123ABC1" >> .env
+        - echo "ROPSTEN_URL = https://eth-ropsten.alchemyapi.io/v2/<YOUR ALCHEMY KEY>" >> .env
+        - echo "PRIVATE_KEY = $PRIVATE_KEY" >> .env
+        - echo "RINKEBY_URL = $RINKEBY_URL" >> .env
+        - echo "RINKEBY_MNEMONIC = $RINKEBY_MNEMONIC" >> .env
         - echo start hardhat compile
         - npx hardhat compile
         - cd ..
