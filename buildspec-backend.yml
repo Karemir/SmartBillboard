@@ -17,6 +17,15 @@ phases:
     commands:
         - echo Creating env file from aws parameters
         - echo AWS_BUCKET_NAME = $AWS_BUCKET_NAME
+        - echo "ETHERS_USE_LOCAL = 1" >> .env
+        - echo "ADSBOARD_CONTRACT = $ADSBOARD_CONTRACT" >> .env
+        - echo "ETHERS_USE_LOCAL = 1" >> .env
+        - echo "ETHERS_USE_LOCAL = 1" >> .env
+        - echo "ETHERS_USE_LOCAL = 1" >> .env
+        - echo "ETHERS_USE_LOCAL = 1" >> .env
+        - echo "ETHERS_USE_LOCAL = 1" >> .env
+        - echo Show file content
+        - less .env
         - echo going inside ethereum
         - cd ethereum
         - echo start hardhat compile
