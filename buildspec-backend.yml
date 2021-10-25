@@ -19,11 +19,11 @@ phases:
         - echo AWS_BUCKET_NAME = $AWS_BUCKET_NAME
         - echo "ETHERS_USE_LOCAL = 1" >> .env
         - echo "ADSBOARD_CONTRACT = $ADSBOARD_CONTRACT" >> .env
-        - echo "ETHERS_USE_LOCAL = 1" >> .env
-        - echo "ETHERS_USE_LOCAL = 1" >> .env
-        - echo "ETHERS_USE_LOCAL = 1" >> .env
-        - echo "ETHERS_USE_LOCAL = 1" >> .env
-        - echo "ETHERS_USE_LOCAL = 1" >> .env
+        - echo "ETHEREUM_WALLET_MNEMONIC = $ETHEREUM_WALLET_MNEMONIC" >> .env
+        - echo "AWS_BUCKET_NAME = $AWS_BUCKET_NAME" >> .env
+        - echo "AWS_BUCKET_REGION = $AWS_BUCKET_REGION" >> .env
+        - echo "AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY" >> .env
+        - echo "AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID" >> .env
         - echo Show file content
         - less .env
         - echo going inside ethereum
