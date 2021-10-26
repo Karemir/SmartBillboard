@@ -24,13 +24,17 @@ phases:
         - echo "AWS_BUCKET_REGION = $AWS_BUCKET_REGION" >> .env
         - echo "AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_KEY" >> .env
         - echo "AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_ID" >> .env
+        - echo "DB_HOST = $DB_HOST" >> .env
+        - echo "DB_PORT = $DB_PORT" >> .env
+        - echo "DB_USERNAME = $DB_USERNAME" >> .env
+        - echo "DB_PASSWORD = $DB_PASSWORD" >> .env
+        - echo "DB_DATABASE = $DB_DATABASE" >> .env
         - echo Show file content
         - less .env
         - echo going inside ethereum
         - cd ethereum
         - echo Creating env file from aws parameters
         - echo "ETHERSCAN_API_KEY = ABC123ABC123ABC123ABC123ABC123ABC1" >> .env
-        - echo "ROPSTEN_URL=" >> .env
         - echo "PRIVATE_KEY = $PRIVATE_KEY" >> .env
         - echo "RINKEBY_URL = $RINKEBY_URL" >> .env
         - echo "RINKEBY_MNEMONIC = $RINKEBY_MNEMONIC" >> .env
