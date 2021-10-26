@@ -45,6 +45,8 @@ phases:
         - cd ..
         - echo Build started 
         - yarn run build
+        - echo mv appspec.yml
+        - mv appspec.yml dist/
 artifacts:
     files:
         - '**/*'
