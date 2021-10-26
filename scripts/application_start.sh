@@ -15,6 +15,6 @@ export NVM_DIR="$HOME/.nvm"
 yarn install
 
 #start our node app in the background
-yarn run build
-(yarn run start:prod&)
+pm2 stop all
+pm2 start dist/main.js --name "SmartBillboard"
 #node app.js > app.out.log 2> app.err.log < /dev/null & 

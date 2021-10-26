@@ -6,6 +6,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 nvm install node
 npm install --global yarn
 yarn install
+yarn add pm2
 #npm install -g @nestjs/cli
 
 #create our working directory if it doesnt exist
