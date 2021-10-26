@@ -11,11 +11,12 @@ yarn add pm2
 
 #create our working directory if it doesnt exist
 DIR="/home/ec2-user/michal-demo"
-
-if [ -d "$DIR"]; then
-    echo "${DIR} exists"
-    rm -r $DIR
-else
-    echo "Creating ${DIR} directory"
-    mkdir ${DIR}
-fi
+rm -r $DIR
+mkdir ${DIR}
+# if [ -d "$DIR"]; then
+#     echo "${DIR} exists"
+    
+# else
+#     echo "Creating ${DIR} directory"
+    
+# fi
