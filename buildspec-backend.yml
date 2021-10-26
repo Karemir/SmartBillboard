@@ -48,9 +48,9 @@ phases:
         - echo mv appspec.yml
         - mv appspec.yml dist/
         - echo mv scripts
-        - mv scripts/application_start.sh /dist
-        - mv scripts/application_stop.sh /dist
-        - mv scripts/before_install.sh /dist
+        - mv scripts/application_start.sh dist/
+        - mv scripts/application_stop.sh dist/
+        - mv scripts/before_install.sh dist/
 artifacts:
     files:
         - '**/*'
