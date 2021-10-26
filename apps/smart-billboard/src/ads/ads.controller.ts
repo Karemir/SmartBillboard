@@ -1,6 +1,6 @@
 import { Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BuyAdCommand } from './commands/buy-ad-command/buy-ad.command';
 import { BuyAdCommandResult } from './commands/buy-ad-command/buy-ad.command-result';
 import { AdStatusDto } from './dto/ad-status.dto';
@@ -9,6 +9,7 @@ import { BuyAdDto } from './dto/buy-ad.dto';
 import { GetAdStatusQuery } from './queries/get-ad-status-query/get-ad-status.query';
 import { GetAdStatusQueryResult } from './queries/get-ad-status-query/get-ad-status.query-result';
 
+@ApiTags('ads')
 @Controller('ads')
 export class AdsController {
     constructor(

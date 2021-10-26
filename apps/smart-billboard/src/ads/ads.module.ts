@@ -17,11 +17,13 @@ export const QueryHandlers = [GetAdStatusQueryHandler]
     ...CommandHandlers,
     ...QueryHandlers
   ],
-  imports: [ConfigModule.forRoot({
-    envFilePath: '.env',
-  }),
-  CqrsModule,
-  ConfigModule.forFeature(awsBucketConfig),
-  ConfigModule.forFeature(ethereumConfig)]
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
+    CqrsModule,
+    ConfigModule.forFeature(awsBucketConfig),
+    ConfigModule.forFeature(ethereumConfig)
+  ]
 })
 export class AdsModule { }
