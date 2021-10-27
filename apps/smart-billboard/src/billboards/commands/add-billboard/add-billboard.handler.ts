@@ -23,16 +23,10 @@ export class AddBillboardCommandHandler implements ICommandHandler<AddBillboardC
         });
 
         try {
-            const isRegistered = await this.billboardContractService.isBillboardRegistered(command.address);
-            if (!isRegistered) {
-                return new AddBillboardResult(false, "Billboard did not register on blockchain");
-            }
-        } catch (error) {
-            console.log(`Billboard address is incorrect: ${error}`)
-            return new AddBillboardResult(false, "Incorrect address");
+            this.billboardRepository.save(billboard);
+        } catch {
+            return new AddBillboardResult(false, "Failed to save to db");
         }
-
-        this.billboardRepository.save(billboard);
         return new AddBillboardResult(true, null);
     }
 }

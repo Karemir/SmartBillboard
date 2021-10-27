@@ -1,13 +1,16 @@
 export class ListBillboardsQueryResult {
-    constructor(items: ListBillboardQueryResultItem) { }
+    constructor(
+        public billboards: ListBillboardQueryResultItem[],
+    ) { }
 }
 
 export class ListBillboardQueryResultItem {
     constructor(
-        address: string,
-        location: string,
-        description: string,
-        type: string,
-        walletBallance: number,
+        public address: string,
+        public location: string,
+        public description: string,
+        public type: string,
+        public walletBallance: number,
+        public isRegisteredInContract: boolean,
     ) { }
 }

@@ -39,6 +39,6 @@ export class BillboardContractService {
 
     async getBalance(walletAddress: string): Promise<number> {
         const balance = await this.ethProvider.getBalance(walletAddress);
-        return balance.toNumber();
+        return +ethers.utils.formatEther(balance);
     }
 }
